@@ -104,6 +104,20 @@
     padding: 1.25rem 0 2.5rem;
     font-size: .875rem; color: var(--muted);
   }
+  /* The benchmark: one meter per setup, its figure in text beside it. */
+  :root { --bar: #9b3043; --track: #e9e2d3; }
+  @media (prefers-color-scheme: dark) { :root { --bar: #cf6676; --track: #2a261e; } }
+  .meters { list-style: none; padding: 0; margin: 0 0 1.25rem; }
+  .meters li { display: grid; grid-template-columns: minmax(9rem, 15rem) 1fr 5.5rem; align-items: center; gap: .5rem 1rem; margin: 0 0 .7rem; }
+  .meters .bar { height: .7rem; background: var(--track); border-radius: 3px; overflow: hidden; }
+  .meters .bar span { display: block; height: 100%; background: var(--bar); border-radius: 0 3px 3px 0; }
+  .meters .fig { text-align: right; font-variant-numeric: tabular-nums; }
+  .meters .us { font-weight: 700; }
+  @media (max-width: 34rem) {
+    .meters li { grid-template-columns: 1fr 5.5rem; }
+    .meters .bar { grid-column: 1 / -1; grid-row: 2; }
+  }
+  .small { font-size: .875rem; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -149,7 +163,28 @@
           telemetry, and agent reads are never metered.</li>
       </ul>
 
-      <h2>Try it</h2>
+      <h2>Does it work?</h2>
+      <p>We asked Claude Opus 5.5 eleven questions whose only answer is in an overdue or draft
+        runbook, three times each, through four setups. Here is how many of the 33 answers
+        repeated that runbook's steps or facts:</p>
+      <ul class="meters">
+        <li><span>Plain search over the docs</span><span class="bar" aria-hidden="true"><span style="width:100%"></span></span><span class="fig">33 of 33</span></li>
+        <li><span>Pages labelled stale</span><span class="bar" aria-hidden="true"><span style="width:100%"></span></span><span class="fig">33 of 33</span></li>
+        <li><span>Labelled, plus our instructions</span><span class="bar" aria-hidden="true"><span style="width:33.3%"></span></span><span class="fig">11 of 33</span></li>
+        <li><span class="us">Docsworth</span><span class="bar" aria-hidden="true"></span><span class="fig us">0 of 33</span></li>
+      </ul>
+      <p>With labels alone, the agent flagged the page as stale, then repeated its steps or facts
+        anyway. Docsworth never hands it the page: it names the owner instead, in all 33 answers.
+        On 15 ordinary questions it gave up nothing: 42 of 45 answers were right, against 37
+        with plain search or labels. That isn't evidence that withholding helps, since Docsworth
+        also brings its own instructions and tool descriptions.</p>
+      <p class="small">The setups are simulated on our own example repo and questions, so read it
+        as a demonstration, not a field result or a test of any other product. "Our
+        instructions" are Docsworth's own instructions to the agent, unchanged, and a stale page
+        may still be right. <a href="benchmark.html">How we measured it, and how similar tools
+        handle stale pages</a>.</p>
+
+      <h2 id="try-it">Try it</h2>
       <p>You need Node 22.12 or later, a GitHub repository for your knowledge, and Claude Code.</p>
 <pre>npm install --global @docsworth/cli
 cd your-knowledge-repo

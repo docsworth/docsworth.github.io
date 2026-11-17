@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docsworth benchmark</title>
+<meta name="description" content="What Claude does with a stale runbook under four setups, measured on our example repo, and how similar tools handle unverified pages.">
+<meta property="og:title" content="Docsworth benchmark">
+<meta property="og:description" content="Simulated setups on our own example repo, not tests of other products; our instructions are Docsworth's own, unchanged; a stale page may still be right. Claude repeated a stale runbook in 33 of 33 answers with plain search, 33 with labels, 11 with labels plus our instructions, 0 with Docsworth.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://docsworth.github.io/benchmark.html">
+<meta property="og:image" content="https://docsworth.github.io/benchmark.png">
+<meta property="og:image:width" content="2400">
+<meta property="og:image:height" content="1350">
+<meta property="og:image:alt" content="Bar chart of answers that repeated a stale runbook, out of 33: plain search over the docs 33, pages labelled stale 33, labelled plus our instructions 11, Docsworth 0. Simulated setups on our own example repo and questions, not tests of other products. Our instructions are Docsworth's own, unchanged. A stale page may still be right. Docsworth withholds the page and names its owner instead (33 of 33).">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="color-scheme" content="light dark">
+<!-- The bow tie, inline. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%237a2331' stroke='%237a2331' stroke-linejoin='round' stroke-width='1.5' d='M2.5 6.5 10.5 12l-8 5.5zM21.5 6.5 13.5 12l8 5.5z'/%3E%3Crect x='9.5' y='9.5' width='5' height='5' rx='1.2' fill='%237a2331'/%3E%3C/svg%3E">
+<style>
+  /* One file, system fonts, no scripts, no cookies, no analytics. */
+  :root {
+    --paper: #f7f3ea;
+    --ink: #1f1c17;
+    --muted: #5e584d;
+    --rule: #ddd5c4;
+    --accent: #7a2331;
+    --accent-ink: #fbf7ef;
+    --card: #fffdf8;
+    --code: #efe9dc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #16140f;
+      --ink: #ece6d8;
+      --muted: #b0a794;
+      --rule: #3a352b;
+      --accent: #e3a1aa;
+      --accent-ink: #1c1712;
+      --card: #1f1c16;
+      --code: #2a261e;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 1.0625rem/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  .wrap { max-width: 42rem; margin: 0 auto; padding: 0 16px; }
+  header { padding: 2.5rem 0 0; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  header nav a { font-size: .95rem; }
+  .mark {
+    display: inline-flex; align-items: center; gap: .55rem;
+    font: 600 1.25rem/1 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    letter-spacing: .01em;
+  }
+  .mark svg { width: 1.7rem; height: 1.7rem; color: var(--accent); }
+  main { padding: 3rem 0 2.5rem; }
+  h1 {
+    font: 600 clamp(1.9rem, 5.2vw, 2.7rem)/1.15 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    letter-spacing: -.01em;
+    margin: 0 0 2rem;
+    text-wrap: balance;
+  }
+  h1 .rest { color: var(--muted); }
+  h2 {
+    font: 600 1.35rem/1.25 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    margin: 2.5rem 0 1rem;
+  }
+  figure { margin: 0 0 2rem; }
+  video {
+    display: block; width: 100%; height: auto; aspect-ratio: 8 / 9;
+    border-radius: 6px; border: 1px solid var(--rule); background: #1e1e2e;
+  }
+  figcaption { font-size: .875rem; color: var(--muted); margin-top: .6rem; }
+  p { margin: 0 0 1.25rem; }
+  ul { margin: 0 0 1.25rem; padding-left: 1.25rem; }
+  li { margin: 0 0 .4rem; }
+  pre {
+    background: var(--code);
+    border-radius: 4px;
+    padding: .8rem 1rem;
+    margin: 0 0 1.25rem;
+    font: .85rem/1.6 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  code { font: .9em ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; margin: 1.75rem 0 0; }
+  .button {
+    display: inline-block;
+    background: var(--accent); color: var(--accent-ink);
+    font-weight: 600; text-decoration: none;
+    padding: .7rem 1.2rem; border-radius: 4px;
+  }
+  .button:hover { filter: brightness(1.08); }
+  a { color: var(--accent); text-underline-offset: .18em; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 1.25rem 0 2.5rem;
+    font-size: .875rem; color: var(--muted);
+  }
+  /* The benchmark: one meter per setup, its figure in text beside it. */
+  :root { --bar: #9b3043; --track: #e9e2d3; }
+  @media (prefers-color-scheme: dark) { :root { --bar: #cf6676; --track: #2a261e; } }
+  .meters { list-style: none; padding: 0; margin: 0 0 1.25rem; }
+  .meters li { display: grid; grid-template-columns: minmax(9rem, 15rem) 1fr 5.5rem; align-items: center; gap: .5rem 1rem; margin: 0 0 .7rem; }
+  .meters .bar { height: .7rem; background: var(--track); border-radius: 3px; overflow: hidden; }
+  .meters .bar span { display: block; height: 100%; background: var(--bar); border-radius: 0 3px 3px 0; }
+  .meters .fig { text-align: right; font-variant-numeric: tabular-nums; }
+  .meters .us { font-weight: 700; }
+  @media (max-width: 34rem) {
+    .meters li { grid-template-columns: 1fr 5.5rem; }
+    .meters .bar { grid-column: 1 / -1; grid-row: 2; }
+  }
+  .small { font-size: .875rem; color: var(--muted); }
+
+  table { width: 100%; border-collapse: collapse; margin: 0 0 1.25rem; font-size: .9rem; }
+  th, td { text-align: left; vertical-align: top; padding: .45rem .6rem .45rem 0; border-bottom: 1px solid var(--rule); }
+  th { font-weight: 600; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  .scroll { overflow-x: auto; margin: 0 0 1.25rem; }
+  .scroll table { margin: 0; }
+  .scroll table.wide { min-width: 40rem; }
+  ol.sources { font-size: .8rem; color: var(--muted); padding-left: 1.5rem; overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="mark" href="./" style="color: inherit; text-decoration: none">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5" d="M2.5 6.5 10.5 12l-8 5.5zM21.5 6.5 13.5 12l8 5.5z"/>
+          <rect x="9.5" y="9.5" width="5" height="5" rx="1.2" fill="currentColor"/>
+        </svg>
+        Docsworth
+      </a>
+      <nav><a href="https://github.com/docsworth/docsworth">GitHub</a></nav>
+    </header>
+
+    <main>
+      <h1>What an agent does with a stale runbook. <span class="rest">Four setups, one question.</span></h1>
+
+      <p>When the only page that answers a question is past its review date, or is still a
+        draft, does the agent repeat it? We measured that on November 17, 2026.</p>
+
+      <p>How many of the 33 answers per setup repeated the stale runbook's steps or facts:</p>
+      <ul class="meters">
+        <li><span>Plain search over the docs</span><span class="bar" aria-hidden="true"><span style="width:100%"></span></span><span class="fig">33 of 33</span></li>
+        <li><span>Pages labelled stale</span><span class="bar" aria-hidden="true"><span style="width:100%"></span></span><span class="fig">33 of 33</span></li>
+        <li><span>Labelled, plus our instructions</span><span class="bar" aria-hidden="true"><span style="width:33.3%"></span></span><span class="fig">11 of 33</span></li>
+        <li><span class="us">Docsworth</span><span class="bar" aria-hidden="true"></span><span class="fig us">0 of 33</span></li>
+      </ul>
+
+      <h2>The setups</h2>
+      <p>All four use the same model (Claude Opus 5.5), the same base system prompt and the same
+        three tools: search, read and submit an answer. They see the same pages, as the same user.
+        They differ in what the tools return, in the tools' descriptions, and in whether
+        Docsworth's instructions to the agent are added.</p>
+      <ul>
+        <li><strong>Plain search over the docs.</strong> Search and read over the raw pages, with no
+          owner, dates or status. Roughly what a docs folder, a <code>CLAUDE.md</code>, or a wiki
+          connector without verification fields gives an agent.</li>
+        <li><strong>Pages labelled stale.</strong> The same pages, each labelled with its owner,
+          status, review date and whether it may be cited. Nothing is withheld.</li>
+        <li><strong>Labelled, plus our instructions.</strong> The labels, plus Docsworth's own
+          instructions to the agent, unchanged. Two of their sentences bear on these questions:
+          "Cite a page by its id only after opening it with read and seeing citable: true", and
+          "Answer each part of the question from the citable pages that support it. If no
+          citable page answers a part, say so and cite nothing for that part." They were written
+          for Docsworth's own responses, and we tried no other instructions.</li>
+        <li><strong>Docsworth.</strong> Docsworth v0.3.2's search and read, with the instructions and
+          tool descriptions its MCP server sends. A page past its review date or still a draft
+          comes back as excluded, with its owner and without its content.</li>
+      </ul>
+
+      <h2>The questions</h2>
+      <p>Eleven questions whose only answer is on an overdue runbook (scaling the cluster,
+        joining on-call) or a draft (responding to a chargeback). Each ran three times, so each
+        setup gave 33 answers. We also ran 15 ordinary questions that a current page answers,
+        through every setup but the third. The pages and questions are public, in
+        <a href="https://github.com/docsworth/docsworth/tree/v0.3.2/examples/acme">the example
+        repository</a>.</p>
+
+      <h2>Results</h2>
+      <div class="scroll">
+      <table>
+        <caption class="small" style="text-align: left; caption-side: bottom; padding-top: .5rem">Out of 33 answers per setup to the stale questions.</caption>
+        <thead><tr><th>Setup</th><th class="n">Cited the stale page</th><th class="n">Repeated its steps or facts</th><th class="n">Named its owner</th></tr></thead>
+        <tbody>
+          <tr><td>Plain search over the docs</td><td class="n">33</td><td class="n">33</td><td class="n">6</td></tr>
+          <tr><td>Pages labelled stale</td><td class="n">0</td><td class="n">33</td><td class="n">31</td></tr>
+          <tr><td>Labelled, plus our instructions</td><td class="n">0</td><td class="n">11</td><td class="n">33</td></tr>
+          <tr><td><strong>Docsworth</strong></td><td class="n"><strong>0</strong></td><td class="n"><strong>0</strong></td><td class="n"><strong>33</strong></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>By the benchmark's older rule, which checks only what an answer cites and whether it names
+        the owner, labels nearly tie Docsworth: 29 against 32 of 33. They stopped citing the stale
+        page and still repeated it, which is why we also count what the answer says.</p>
+      <p>On the 15 ordinary questions, plain search and labels each answered correctly 37 times
+        out of 45, and Docsworth 42 times. Docsworth also has instructions and tool descriptions
+        the first two setups lack, so this shows it gives up nothing, not that withholding pages
+        helps.</p>
+      <p>"Repeated" means the answer contains a phrase from the stale page, or a rewording of one,
+        that no current page contains, such as
+        <code>prod_pool_max</code> or "shadow two full primary shifts". We read every flagged
+        answer. All 66 from plain search and labels give the page's command, steps or deadline.
+        From the third setup, 11 of 12 do, with a warning attached, and one was a false match
+        on "ask your manager", so it's left out. All 33 answers with labels say the page is
+        overdue, a draft or not citable, then give its content anyway.</p>
+
+      <h2>What it shows, and what it doesn't</h2>
+      <ul>
+        <li><strong>A label is a warning, not a control.</strong> With every stale page labelled,
+          the agent stopped citing it and still repeated its steps or facts in every answer. With
+          our instructions added, it still did 11 times out of 33. An agent that goes
+          on to run commands can act on the steps, not on the caveat. (No setup here could run
+          commands.)</li>
+        <li><strong>Docsworth's zero comes from the design.</strong> The server never sends a stale
+          page's content, so the agent can't repeat it. Any index that simply dropped stale pages
+          would score zero too; what Docsworth adds is the owner in place of the page.</li>
+        <li><strong>It has a cost.</strong> If a stale page is still right, the agent can't give
+          its steps, only who to ask.</li>
+        <li><strong>It covers reads through Docsworth.</strong> An agent that can also open the
+          knowledge repository's files directly isn't covered by the rule.</li>
+        <li><strong>The stale pages may well be right.</strong> "Repeated" means the agent relied
+          on a page nobody had verified within its review period, not that the answer was wrong.</li>
+        <li><strong>It's a demonstration, not a field result.</strong> The example repo has 24 pages
+          and we wrote the questions. One model, eleven questions, three runs each.</li>
+        <li><strong>These setups aren't the products below.</strong> They stand for patterns, not
+          products. We didn't run Notion, Glean, Guru or Confluence, and some of them do more
+          than label: see the table.</li>
+        <li><strong>Docsworth's agent instructions were tuned</strong> on some of these questions
+          earlier. On the four we never tuned on, the answers that repeated the stale page were 12,
+          12, 6 and 0 out of 12, in the order above.</li>
+      </ul>
+
+      <h2>How similar tools handle stale pages</h2>
+      <p>From each vendor's own documentation, read on November 17, 2026. We didn't test them in a
+        live account, and they change often.</p>
+      <div class="scroll">
+      <table class="wide">
+        <thead><tr><th>Tool</th><th>Owner and review date</th><th>What its AI does with an unverified page</th><th>Where the content lives</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Docsworth</strong></td><td>One owning team per page, through CODEOWNERS, and a review period per page</td><td>Withholds it, by default, from every agent that reads through its MCP server, and returns its owner</td><td>Your Git repository</td></tr>
+          <tr><td>Confluence with Rovo</td><td>A verified status <a href="#s1">[1]</a> and page owners <a href="#s14">[14]</a>. Atlassian's 2024 announcement says verification doesn't expire on its own, though an automation rule can un-verify inactive pages <a href="#s1">[1]</a></td><td>Rovo search boosts fresher results and lets a user filter to verified pages <a href="#s2">[2]</a>; the Rovo MCP tools document no such filter <a href="#s3">[3]</a>. A third-party app says it keeps stale pages out of answers <a href="#s13">[13]</a></td><td>Atlassian's cloud</td></tr>
+          <tr><td>Notion</td><td>Verification with an optional expiry date, and an owner who is told when it expires <a href="#s4">[4]</a></td><td>Prioritises verified pages in search and Q&amp;A <a href="#s5">[5]</a>; Q&amp;A can still find outdated pages <a href="#s6">[6]</a></td><td>Notion's cloud</td></tr>
+          <tr><td>Guru</td><td>A verifier and a review interval per card <a href="#s7">[7]</a></td><td>Can answer from unverified cards by default <a href="#s7">[7]</a>; an agent's owner can set it to "Only verified connected sources" <a href="#s8">[8]</a>. Its MCP server works through those agents; the docs don't say whether its search and fetch honour the setting <a href="#s15">[15]</a></td><td>Guru's cloud</td></tr>
+          <tr><td>Glean</td><td>Verified, unverified or deprecated, with reminders <a href="#s9">[9]</a></td><td>Verification can influence results <a href="#s10">[10]</a>; deprecated documents may still appear <a href="#s11">[11]</a>. An agent can be limited to a curated collection <a href="#s16">[16]</a></td><td>Your apps, indexed by Glean</td></tr>
+          <tr><td><code>CLAUDE.md</code> or a docs folder</td><td>None</td><td>Loaded as context, not enforced <a href="#s12">[12]</a></td><td>Your Git repository</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Owners, verification and expiry aren't new, and Guru can keep any Knowledge Agent to
+        verified sources if that agent's owner turns it on. What Docsworth adds is where the rule lives: in your
+        own repository, applied by default to every agent that reads through its MCP server, with
+        the owner returned in place of the page.</p>
+
+      <h2>Sources</h2>
+      <ol class="sources">
+        <li id="s1"><a href="https://community.atlassian.com/forums/Confluence-articles/Verified-Pages-Now-Available-in-Confluence/ba-p/2664827">Atlassian Community: Verified pages now available in Confluence</a></li>
+        <li id="s2"><a href="https://www.atlassian.com/blog/rovo/unraveling-rovo-search">Atlassian: Unraveling Rovo search</a>; <a href="https://community.atlassian.com/forums/Confluence-articles/Introducing-Rovo-Search-for-Confluence-customers/ba-p/2995592">Introducing Rovo Search for Confluence customers</a></li>
+        <li id="s3"><a href="https://developer.atlassian.com/cloud/rovo-mcp/guides/supported-tools/">Atlassian: Rovo MCP supported tools</a></li>
+        <li id="s4"><a href="https://www.notion.com/help/wikis-and-verified-pages">Notion Help: Wikis and verified pages</a></li>
+        <li id="s5"><a href="https://www.notion.com/help/guides/verify-knowledge-your-teammates-can-trust-with-page-verification">Notion: Verify knowledge your teammates can trust</a></li>
+        <li id="s6"><a href="https://www.notion.com/help/guides/understanding-how-q-and-a-finds-answers-can-help-you-get-better-results">Notion: How Q&amp;A finds answers</a></li>
+        <li id="s7"><a href="https://help.getguru.com/docs/verifying-and-unverifying-cards">Guru Help: Verifying and unverifying cards</a></li>
+        <li id="s8"><a href="https://help.getguru.com/docs/knowledge-agent-quality-setup-guide">Guru Help: Knowledge Agent quality setup</a></li>
+        <li id="s9"><a href="https://docs.glean.com/user-guide/knowledge/verification/how-verification-works">Glean: How verification works</a></li>
+        <li id="s10"><a href="https://docs.glean.com/user-guide/assistant/how-glean-accesses-info">Glean: How Glean accesses information</a></li>
+        <li id="s11"><a href="https://docs.glean.com/user-guide/knowledge/verification/what-should-i-do-with-documents-that-are-completely-out-of-date">Glean: Documents that are out of date</a></li>
+        <li id="s12"><a href="https://code.claude.com/docs/en/memory">Claude Code docs: How Claude remembers your project</a></li>
+        <li id="s13"><a href="https://marketplace.atlassian.com/apps/1059183334">Atlassian Marketplace: FreshPage</a></li>
+        <li id="s14"><a href="https://support.atlassian.com/confluence-cloud/docs/transfer-content-item-ownership-from-one-user-to-another/">Atlassian Support: Transfer content ownership</a></li>
+        <li id="s15"><a href="https://help.getguru.com/docs/connecting-gurus-mcp-server">Guru Help: Connecting Guru's MCP server</a></li>
+        <li id="s16"><a href="https://docs.glean.com/tools/glean/company-search">Glean: Company Search</a></li>
+      </ol>
+
+      <div class="cta">
+        <a class="button" href="./#try-it">Try it</a>
+        <a href="./">Back to Docsworth</a>
+      </div>
+    </main>
+
+    <footer>
+      The core is open source under Apache-2.0. The benchmark harness is part of Docsworth pro,
+      a paid add-on under its own licence.
+    </footer>
+  </div>
+</body>
+</html>
