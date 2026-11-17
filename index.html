@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docsworth: agents cite only verified runbooks</title>
+<meta name="description" content="Docsworth is a knowledge layer for coding agents. Agents cite only the runbooks a team owns and has verified, and say who owns the rest.">
+<meta property="og:title" content="Docsworth">
+<meta property="og:description" content="Agents cite only the runbooks a team owns and has verified. For the rest, they say who owns it.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://docsworth.github.io/">
+<meta property="og:image" content="https://docsworth.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Claude Code declining to cite an overdue runbook, and naming the platform team as its owner">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="color-scheme" content="light dark">
+<!-- The bow tie, inline. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%237a2331' stroke='%237a2331' stroke-linejoin='round' stroke-width='1.5' d='M2.5 6.5 10.5 12l-8 5.5zM21.5 6.5 13.5 12l8 5.5z'/%3E%3Crect x='9.5' y='9.5' width='5' height='5' rx='1.2' fill='%237a2331'/%3E%3C/svg%3E">
+<style>
+  /* One file, system fonts, no scripts, no cookies, no analytics. */
+  :root {
+    --paper: #f7f3ea;
+    --ink: #1f1c17;
+    --muted: #5e584d;
+    --rule: #ddd5c4;
+    --accent: #7a2331;
+    --accent-ink: #fbf7ef;
+    --card: #fffdf8;
+    --code: #efe9dc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #16140f;
+      --ink: #ece6d8;
+      --muted: #b0a794;
+      --rule: #3a352b;
+      --accent: #e3a1aa;
+      --accent-ink: #1c1712;
+      --card: #1f1c16;
+      --code: #2a261e;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 1.0625rem/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  .wrap { max-width: 42rem; margin: 0 auto; padding: 0 16px; }
+  header { padding: 2.5rem 0 0; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  header nav a { font-size: .95rem; }
+  .mark {
+    display: inline-flex; align-items: center; gap: .55rem;
+    font: 600 1.25rem/1 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    letter-spacing: .01em;
+  }
+  .mark svg { width: 1.7rem; height: 1.7rem; color: var(--accent); }
+  main { padding: 3rem 0 2.5rem; }
+  h1 {
+    font: 600 clamp(1.9rem, 5.2vw, 2.7rem)/1.15 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    letter-spacing: -.01em;
+    margin: 0 0 2rem;
+    text-wrap: balance;
+  }
+  h1 .rest { color: var(--muted); }
+  h2 {
+    font: 600 1.35rem/1.25 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    margin: 2.5rem 0 1rem;
+  }
+  figure { margin: 0 0 2rem; }
+  video {
+    display: block; width: 100%; height: auto; aspect-ratio: 1 / 1;
+    border-radius: 6px; border: 1px solid var(--rule); background: #1e1e2e;
+  }
+  figcaption { font-size: .875rem; color: var(--muted); margin-top: .6rem; }
+  p { margin: 0 0 1.25rem; }
+  ul { margin: 0 0 1.25rem; padding-left: 1.25rem; }
+  li { margin: 0 0 .4rem; }
+  pre {
+    background: var(--code);
+    border-radius: 4px;
+    padding: .8rem 1rem;
+    margin: 0 0 1.25rem;
+    font: .85rem/1.6 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  code { font: .9em ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; margin: 1.75rem 0 0; }
+  .button {
+    display: inline-block;
+    background: var(--accent); color: var(--accent-ink);
+    font-weight: 600; text-decoration: none;
+    padding: .7rem 1.2rem; border-radius: 4px;
+  }
+  .button:hover { filter: brightness(1.08); }
+  a { color: var(--accent); text-underline-offset: .18em; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 1.25rem 0 2.5rem;
+    font-size: .875rem; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <span class="mark">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5" d="M2.5 6.5 10.5 12l-8 5.5zM21.5 6.5 13.5 12l8 5.5z"/>
+          <rect x="9.5" y="9.5" width="5" height="5" rx="1.2" fill="currentColor"/>
+        </svg>
+        Docsworth
+      </span>
+      <nav><a href="https://github.com/docsworth/docsworth">GitHub</a></nav>
+    </header>
+
+    <main>
+      <h1>Agents cite only the runbooks a team owns and has verified. <span class="rest">For the rest, they say who owns it.</span></h1>
+
+      <figure>
+        <video src="demo.mp4" poster="demo-poster.png" autoplay muted loop playsinline controls preload="metadata"
+          aria-label="Claude Code answers a rollback question from a verified runbook, then declines to cite an overdue scaling runbook and names the platform team as its owner"></video>
+        <figcaption>A real Claude Code session with the Docsworth plugin, on our example repo. The
+          answers are unedited; only the idle time is cut. The rollback runbook was verified on
+          October 10, so it's cited. The cluster-scaling runbook was due for review on October 30,
+          so it isn't, and the agent names its owner instead.</figcaption>
+      </figure>
+
+      <p>Your coding agents already read your runbooks. They can't tell a page verified last
+        month from one nobody has touched in a year, so they cite both with the same
+        confidence. Docsworth keeps your runbooks as markdown in your own repository, gives
+        every page an owner and a review date, and lets agents cite only the pages that are
+        current.</p>
+
+      <h2>How it works</h2>
+      <ul>
+        <li>Runbooks are markdown in your own GitHub repository.</li>
+        <li>Each page has one owning team, enforced through CODEOWNERS, and a review SLA.</li>
+        <li>The MCP server lets agents cite only canonical pages within their SLA. Anything
+          else comes back excluded, with its owner.</li>
+        <li>Docsworth never writes to your default branch: changes and verifications are pull
+          requests to the owning team.</li>
+        <li>It runs on your machines with your GitHub identity. No hosted service, no
+          telemetry, and agent reads are never metered.</li>
+      </ul>
+
+      <h2>Try it</h2>
+      <p>You need Node 22.12 or later, a GitHub repository for your knowledge, and Claude Code.</p>
+<pre>npm install --global @docsworth/cli
+cd your-knowledge-repo
+docsworth init --team platform
+docsworth lint .
+
+claude plugin marketplace add docsworth/docsworth
+claude plugin install docsworth@docsworth</pre>
+      <p>Already have docs in markdown? <code>docsworth adopt</code> adds the frontmatter and
+        turns site routes into <code>.md</code> links, as drafts your teams then verify.</p>
+
+      <div class="cta">
+        <a class="button" href="https://github.com/docsworth/docsworth">Read the quickstart</a>
+        <a href="https://www.npmjs.com/package/@docsworth/cli">@docsworth/cli on npm</a>
+      </div>
+
+      <h2>Tell us what went stale</h2>
+      <p>If a stale runbook has misled one of your agents, or you'd like help rolling this out
+        to a team, <a href="https://github.com/docsworth/docsworth/issues/new">open an issue</a>
+        and tell us what happened.</p>
+    </main>
+
+    <footer>
+      The core is open source under Apache-2.0. Docsworth pro, a paid add-on under its own
+      licence, adds a read-only Confluence and Notion mirror, the weekly owner digest, a
+      coverage dashboard, an audit report and an accuracy benchmark.
+    </footer>
+  </div>
+</body>
+</html>
