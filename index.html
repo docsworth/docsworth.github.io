@@ -113,6 +113,8 @@
   .meters .bar span { display: block; height: 100%; background: var(--bar); border-radius: 0 3px 3px 0; }
   .meters .fig { text-align: right; font-variant-numeric: tabular-nums; }
   .meters .us { font-weight: 700; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .meters small { display: block; font-size: .8rem; font-weight: 400; color: var(--muted); }
   @media (max-width: 34rem) {
     .meters li { grid-template-columns: 1fr 5.5rem; }
     .meters .bar { grid-column: 1 / -1; grid-row: 2; }
@@ -164,25 +166,33 @@
       </ul>
 
       <h2>Does it work?</h2>
-      <p>We asked Claude Opus 5.5 eleven questions whose only answer is in an overdue or draft
-        runbook, three times each, through four setups. Here is how many of the 33 answers
-        repeated that runbook's steps or facts:</p>
+      <p>We asked Claude eleven questions whose only answer is in an overdue or draft runbook,
+        three times each, through five setups. Here is how many of Claude Opus 5.5's 33 runs
+        repeated that runbook's steps or facts, and how often each setup named the page's owner:</p>
       <ul class="meters">
-        <li><span>Plain search over the docs</span><span class="bar" aria-hidden="true"><span style="width:100%"></span></span><span class="fig">33 of 33</span></li>
-        <li><span>Pages labelled stale</span><span class="bar" aria-hidden="true"><span style="width:100%"></span></span><span class="fig">33 of 33</span></li>
-        <li><span>Labelled, plus our instructions</span><span class="bar" aria-hidden="true"><span style="width:33.3%"></span></span><span class="fig">11 of 33</span></li>
-        <li><span class="us">Docsworth</span><span class="bar" aria-hidden="true"></span><span class="fig us">0 of 33</span></li>
+        <li><span>Plain search over the docs<small>named the owner 6 times</small></span><span class="bar" aria-hidden="true"><span style="width:100%"></span></span><span class="fig"><span class="sr">repeated it in </span>33 of 33</span></li>
+        <li><span>Pages labelled stale<small>named the owner 31 times</small></span><span class="bar" aria-hidden="true"><span style="width:100%"></span></span><span class="fig"><span class="sr">repeated it in </span>33 of 33</span></li>
+        <li><span>Labelled, plus our instructions<small>named the owner 33 times</small></span><span class="bar" aria-hidden="true"><span style="width:33.3%"></span></span><span class="fig"><span class="sr">repeated it in </span>11 of 33</span></li>
+        <li><span>Filtered: stale pages removed<small>named the owner 7 times</small></span><span class="bar" aria-hidden="true"></span><span class="fig"><span class="sr">repeated it in </span>0 of 33</span></li>
+        <li><span class="us">Docsworth<small>named the owner 33 times</small></span><span class="bar" aria-hidden="true"></span><span class="fig us"><span class="sr">repeated it in </span>0 of 33</span></li>
       </ul>
-      <p>With labels alone, the agent flagged the page as stale, then repeated its steps or facts
-        anyway. Docsworth never hands it the page: it names the owner instead, in all 33 answers.
-        On 15 ordinary questions it gave up nothing: 42 of 45 answers were right, against 37
-        with plain search or labels. That isn't evidence that withholding helps, since Docsworth
-        also brings its own instructions and tool descriptions.</p>
+      <p>With labels alone, the agent flagged the page as stale and repeated its steps or facts
+        anyway. A plain filter that removes stale pages stops that, but then the agent rarely
+        knows who to ask: it named the owner 7 times in 33. Docsworth's search leaves the page out
+        by default and returns its owner instead. The pattern held on Claude Sonnet 5.5 and Haiku
+        5.5, though Haiku through Docsworth often cited a nearby page that doesn't answer. Across their 66
+        answers through Docsworth, one Haiku answer repeated a stale page, after reading it by id. On 15 ordinary questions Docsworth
+        gave up nothing on any of the three models.</p>
       <p class="small">The setups are simulated on our own example repo and questions, so read it
-        as a demonstration, not a field result or a test of any other product. "Our
+        as a demonstration, not a field result or a test of any other product. Ambiguous repeats
+        were checked by hand. "Our
         instructions" are Docsworth's own instructions to the agent, unchanged, and a stale page
         may still be right. <a href="benchmark.html">How we measured it, and how similar tools
         handle stale pages</a>.</p>
+      <p class="small"><strong>Corrected November 18:</strong> this section said Docsworth never
+        hands an agent a stale page. Its search leaves stale pages out by default (an agent can ask
+        for them with <code>include_stale</code>), and its read tool returns one if the agent asks for
+        it by id.</p>
 
       <h2 id="try-it">Try it</h2>
       <p>You need Node 22.12 or later, a GitHub repository for your knowledge, and Claude Code.</p>

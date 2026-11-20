@@ -4,15 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Docsworth benchmark</title>
-<meta name="description" content="What Claude does with a stale runbook under four setups, measured on our example repo, and how similar tools handle unverified pages.">
+<meta name="description" content="What Claude does with a stale runbook under five setups on three models, measured on our example repo, and how similar tools handle unverified pages.">
 <meta property="og:title" content="Docsworth benchmark">
-<meta property="og:description" content="Simulated setups on our own example repo, not tests of other products; our instructions are Docsworth's own, unchanged; a stale page may still be right. Claude repeated a stale runbook in 33 of 33 answers with plain search, 33 with labels, 11 with labels plus our instructions, 0 with Docsworth.">
+<meta property="og:description" content="Simulated setups on our own example repo, not tests of other products; ambiguous repeats checked by hand; our instructions are Docsworth's own, unchanged; a stale page may still be right. On Opus, Sonnet and Haiku 5.5, Claude repeated a stale runbook in nearly every answer with plain search or labels. Through Docsworth it was repeated in 1 of 99 answers, and the owner named in all 99; a plain filter repeated it in none, but named the owner in only 6 or 7 of 33.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://docsworth.github.io/benchmark.html">
-<meta property="og:image" content="https://docsworth.github.io/benchmark.png">
+<meta property="og:image" content="https://docsworth.github.io/benchmark-r2.png">
 <meta property="og:image:width" content="2400">
 <meta property="og:image:height" content="1350">
-<meta property="og:image:alt" content="Bar chart of answers that repeated a stale runbook, out of 33: plain search over the docs 33, pages labelled stale 33, labelled plus our instructions 11, Docsworth 0. Simulated setups on our own example repo and questions, not tests of other products. Our instructions are Docsworth's own, unchanged. A stale page may still be right. Docsworth withholds the page and names its owner instead (33 of 33).">
+<meta property="og:image:alt" content="Chart of 33 runs per setup and model on Opus, Sonnet and Haiku 5.5. Repeated the stale page: plain search 33, 33, 33; labelled 33, 33, 32; labelled plus our instructions 11, 7, 15; filtered 0, 0, 0; Docsworth 0, 0, 1. Named the owner: plain search 6, 6, 7; labelled 31, 24, 29; labelled plus our instructions 33, 33, 33; filtered 7, 6, 6; Docsworth 33, 33, 33. Simulated setups on our own example repo, not tests of other products; our instructions are Docsworth's own, unchanged; a stale page may still be right. Ambiguous repeats were checked by hand. Docsworth's search leaves a stale page out by default; its read tool still returns it if asked for it by id.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="color-scheme" content="light dark">
 <!-- The bow tie, inline. -->
@@ -113,6 +113,8 @@
   .meters .bar span { display: block; height: 100%; background: var(--bar); border-radius: 0 3px 3px 0; }
   .meters .fig { text-align: right; font-variant-numeric: tabular-nums; }
   .meters .us { font-weight: 700; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .meters small { display: block; font-size: .8rem; font-weight: 400; color: var(--muted); }
   @media (max-width: 34rem) {
     .meters li { grid-template-columns: 1fr 5.5rem; }
     .meters .bar { grid-column: 1 / -1; grid-row: 2; }
@@ -143,24 +145,31 @@
     </header>
 
     <main>
-      <h1>What an agent does with a stale runbook. <span class="rest">Four setups, one question.</span></h1>
+      <h1>What an agent does with a stale runbook. <span class="rest">Five setups, three models, one question.</span></h1>
 
-      <p>When the only page that answers a question is past its review date, or is still a
-        draft, does the agent repeat it? We measured that on November 17, 2026.</p>
+      <p>When the only page that answers a question is past its review date, or is still a draft,
+        does the agent repeat it? We measured that on November 17 and 18, 2026.</p>
 
-      <p>How many of the 33 answers per setup repeated the stale runbook's steps or facts:</p>
+      <p class="small"><strong>Corrected November 18.</strong> The first version of this page said
+        Docsworth never hands an agent a stale page. That's true of its search by default, not of
+        its read tool, which returns a stale page if the agent asks for it by id. In the results below, Haiku
+        read a stale page that way in two answers and repeated it in one.</p>
+
+      <p>How many of the 33 runs per setup repeated the stale runbook's steps or facts, on Claude
+        Opus 5.5:</p>
       <ul class="meters">
-        <li><span>Plain search over the docs</span><span class="bar" aria-hidden="true"><span style="width:100%"></span></span><span class="fig">33 of 33</span></li>
-        <li><span>Pages labelled stale</span><span class="bar" aria-hidden="true"><span style="width:100%"></span></span><span class="fig">33 of 33</span></li>
-        <li><span>Labelled, plus our instructions</span><span class="bar" aria-hidden="true"><span style="width:33.3%"></span></span><span class="fig">11 of 33</span></li>
-        <li><span class="us">Docsworth</span><span class="bar" aria-hidden="true"></span><span class="fig us">0 of 33</span></li>
+        <li><span>Plain search over the docs<small>named the owner 6 times</small></span><span class="bar" aria-hidden="true"><span style="width:100%"></span></span><span class="fig"><span class="sr">repeated it in </span>33 of 33</span></li>
+        <li><span>Pages labelled stale<small>named the owner 31 times</small></span><span class="bar" aria-hidden="true"><span style="width:100%"></span></span><span class="fig"><span class="sr">repeated it in </span>33 of 33</span></li>
+        <li><span>Labelled, plus our instructions<small>named the owner 33 times</small></span><span class="bar" aria-hidden="true"><span style="width:33.3%"></span></span><span class="fig"><span class="sr">repeated it in </span>11 of 33</span></li>
+        <li><span>Filtered: stale pages removed<small>named the owner 7 times</small></span><span class="bar" aria-hidden="true"></span><span class="fig"><span class="sr">repeated it in </span>0 of 33</span></li>
+        <li><span class="us">Docsworth<small>named the owner 33 times</small></span><span class="bar" aria-hidden="true"></span><span class="fig us"><span class="sr">repeated it in </span>0 of 33</span></li>
       </ul>
 
       <h2>The setups</h2>
-      <p>All four use the same model (Claude Opus 5.5), the same base system prompt and the same
-        three tools: search, read and submit an answer. They see the same pages, as the same user.
-        They differ in what the tools return, in the tools' descriptions, and in whether
-        Docsworth's instructions to the agent are added.</p>
+      <p>Within each model, all five setups use the same base system prompt and the same three
+        tools: search, read and submit an answer. They start from the same pages, as the same user. They differ in what
+        the tools return, in the tools' descriptions, and in whether Docsworth's instructions to
+        the agent are added.</p>
       <ul>
         <li><strong>Plain search over the docs.</strong> Search and read over the raw pages, with no
           owner, dates or status. Roughly what a docs folder, a <code>CLAUDE.md</code>, or a wiki
@@ -173,71 +182,106 @@
           "Answer each part of the question from the citable pages that support it. If no
           citable page answers a part, say so and cite nothing for that part." They were written
           for Docsworth's own responses, and we tried no other instructions.</li>
+        <li><strong>Filtered: stale pages removed.</strong> Plain search exactly, over only the pages
+          Docsworth would let an agent cite. Overdue, draft, deprecated and mirrored wiki pages are
+          simply absent.</li>
         <li><strong>Docsworth.</strong> Docsworth v0.3.2's search and read, with the instructions and
-          tool descriptions its MCP server sends. A page past its review date or still a draft
-          comes back as excluded, with its owner and without its content.</li>
+          tool descriptions its MCP server sends. Search lists a page past its review date, or a
+          draft, as excluded, with its owner and without its text. (The real server's search also
+          takes <code>include_stale</code>, which returns such pages inline, labelled; this
+          benchmark's search tool took only a query.) Read returns the text if asked for that page
+          by id, marked not citable.</li>
       </ul>
 
       <h2>The questions</h2>
-      <p>Eleven questions whose only answer is on an overdue runbook (scaling the cluster,
-        joining on-call) or a draft (responding to a chargeback). Each ran three times, so each
-        setup gave 33 answers. We also ran 15 ordinary questions that a current page answers,
-        through every setup but the third. The pages and questions are public, in
+      <p>Eleven questions whose only answer is on an overdue runbook (scaling the cluster, joining
+        on-call) or a draft (responding to a chargeback). Each ran three times on each model, so
+        each setup made 33 runs per model. We also ran 15 ordinary questions that a current page
+        answers, through plain search, labels and Docsworth. The pages and questions are public, in
         <a href="https://github.com/docsworth/docsworth/tree/v0.3.2/examples/acme">the example
         repository</a>.</p>
 
       <h2>Results</h2>
+      <p>Answers that repeated the stale page's steps or facts, out of 33:</p>
       <div class="scroll">
       <table>
-        <caption class="small" style="text-align: left; caption-side: bottom; padding-top: .5rem">Out of 33 answers per setup to the stale questions.</caption>
-        <thead><tr><th>Setup</th><th class="n">Cited the stale page</th><th class="n">Repeated its steps or facts</th><th class="n">Named its owner</th></tr></thead>
+        <caption class="small" style="text-align: left; caption-side: bottom; padding-top: .5rem">Every flagged answer that matched fewer than two of its question's specific phrases was read by hand.</caption>
+        <thead><tr><th>Setup</th><th class="n">Opus 5.5</th><th class="n">Sonnet 5.5</th><th class="n">Haiku 5.5</th></tr></thead>
         <tbody>
-          <tr><td>Plain search over the docs</td><td class="n">33</td><td class="n">33</td><td class="n">6</td></tr>
-          <tr><td>Pages labelled stale</td><td class="n">0</td><td class="n">33</td><td class="n">31</td></tr>
-          <tr><td>Labelled, plus our instructions</td><td class="n">0</td><td class="n">11</td><td class="n">33</td></tr>
-          <tr><td><strong>Docsworth</strong></td><td class="n"><strong>0</strong></td><td class="n"><strong>0</strong></td><td class="n"><strong>33</strong></td></tr>
+          <tr><td>Plain search over the docs</td><td class="n">33</td><td class="n">33</td><td class="n">33</td></tr>
+          <tr><td>Pages labelled stale</td><td class="n">33</td><td class="n">33</td><td class="n">32</td></tr>
+          <tr><td>Labelled, plus our instructions</td><td class="n">11</td><td class="n">7</td><td class="n">15</td></tr>
+          <tr><td>Filtered: stale pages removed</td><td class="n">0</td><td class="n">0</td><td class="n">0</td></tr>
+          <tr><td><strong>Docsworth</strong></td><td class="n"><strong>0</strong></td><td class="n"><strong>0</strong></td><td class="n"><strong>1</strong></td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Answers that named the stale page's owner, out of 33:</p>
+      <div class="scroll">
+      <table>
+        <caption class="small" style="text-align: left; caption-side: bottom; padding-top: .5rem">Filtered answers that named an owner took it from another page that mentions the team, or guessed.</caption>
+        <thead><tr><th>Setup</th><th class="n">Opus 5.5</th><th class="n">Sonnet 5.5</th><th class="n">Haiku 5.5</th></tr></thead>
+        <tbody>
+          <tr><td>Plain search over the docs</td><td class="n">6</td><td class="n">6</td><td class="n">7</td></tr>
+          <tr><td>Pages labelled stale</td><td class="n">31</td><td class="n">24</td><td class="n">29</td></tr>
+          <tr><td>Labelled, plus our instructions</td><td class="n">33</td><td class="n">33</td><td class="n">33</td></tr>
+          <tr><td>Filtered: stale pages removed</td><td class="n">7</td><td class="n">6</td><td class="n">6</td></tr>
+          <tr><td><strong>Docsworth</strong></td><td class="n"><strong>33</strong></td><td class="n"><strong>33</strong></td><td class="n"><strong>33</strong></td></tr>
         </tbody>
       </table>
       </div>
       <p>By the benchmark's older rule, which checks only what an answer cites and whether it names
-        the owner, labels nearly tie Docsworth: 29 against 32 of 33. They stopped citing the stale
-        page and still repeated it, which is why we also count what the answer says.</p>
-      <p>On the 15 ordinary questions, plain search and labels each answered correctly 37 times
-        out of 45, and Docsworth 42 times. Docsworth also has instructions and tool descriptions
-        the first two setups lack, so this shows it gives up nothing, not that withholding pages
-        helps.</p>
+        the owner, the setups are closer. Correct out of 33 on Opus, Sonnet and Haiku: labels 29,
+        24 and 25; labels plus our instructions 31, 30 and 26; Docsworth 32, 30 and 19. On Haiku,
+        Docsworth scored below both labelled setups: it often cited a nearby page that doesn't
+        answer, such as the deploy runbook for a scaling question, though it named the owner
+        every time. Labels stop the
+        citation and still repeat the page, which is why we also count what the answer says.</p>
+      <p><strong>Ordinary questions,</strong> correct out of 45: Opus 37 with plain search, 37 with
+        labels and 42 with Docsworth; Sonnet 38, 36 and 41; Haiku 30, 35 and 36. Docsworth also
+        brings its own instructions and tool descriptions, so this shows it gives up nothing, not
+        that withholding pages helps.</p>
       <p>"Repeated" means the answer contains a phrase from the stale page, or a rewording of one,
-        that no current page contains, such as
-        <code>prod_pool_max</code> or "shadow two full primary shifts". We read every flagged
-        answer. All 66 from plain search and labels give the page's command, steps or deadline.
-        From the third setup, 11 of 12 do, with a warning attached, and one was a false match
-        on "ask your manager", so it's left out. All 33 answers with labels say the page is
-        overdue, a draft or not citable, then give its content anyway.</p>
+        that no current page contains, such as <code>prod_pool_max</code> or "shadow two full
+        primary shifts". The hand check removed matches on generic advice like "ask your manager":
+        one on Opus, five on Sonnet and four on Haiku with our instructions, and one search term on
+        the filter. Every labelled answer that repeated the page, with or without our
+        instructions, also said the page was overdue, a draft or not citable.</p>
 
       <h2>What it shows, and what it doesn't</h2>
       <ul>
-        <li><strong>A label is a warning, not a control.</strong> With every stale page labelled,
-          the agent stopped citing it and still repeated its steps or facts in every answer. With
-          our instructions added, it still did 11 times out of 33. An agent that goes
-          on to run commands can act on the steps, not on the caveat. (No setup here could run
-          commands.)</li>
-        <li><strong>Docsworth's zero comes from the design.</strong> The server never sends a stale
-          page's content, so the agent can't repeat it. Any index that simply dropped stale pages
-          would score zero too; what Docsworth adds is the owner in place of the page.</li>
-        <li><strong>It has a cost.</strong> If a stale page is still right, the agent can't give
-          its steps, only who to ask.</li>
-        <li><strong>It covers reads through Docsworth.</strong> An agent that can also open the
-          knowledge repository's files directly isn't covered by the rule.</li>
-        <li><strong>The stale pages may well be right.</strong> "Repeated" means the agent relied
-          on a page nobody had verified within its review period, not that the answer was wrong.</li>
-        <li><strong>It's a demonstration, not a field result.</strong> The example repo has 24 pages
-          and we wrote the questions. One model, eleven questions, three runs each.</li>
+        <li><strong>A label is a warning, not a control.</strong> With every stale page labelled, the
+          agent stopped citing it and still repeated its steps or facts in nearly every answer, on
+          all three models. With our instructions added, it still did in 7 to 15 answers out of
+          33. An agent that goes on to run commands can act on the steps, not on the caveat. (No
+          setup here could run commands.)</li>
+        <li><strong>A filter stops the repeating, and mostly loses the owner.</strong> With stale
+          pages removed, the agent named the owner in only 6 or 7 answers of 33, from other pages
+          that mention the team or a guess. It also cost 1.6 to 2.1 times as much per answer as
+          Docsworth, and we didn't measure why: it tried to open the missing page in 16 of 33 runs
+          on Opus but in only 3 on Sonnet, and Docsworth's own instructions differ too. This is a
+          plain filter. One that put the removed page's owner in its place would name the owner by
+          construction, which is close to what Docsworth's excluded list does. On Opus the
+          filter ran a day after the other setups, and one of its runs hit the turn limit without
+          answering.</li>
+        <li><strong>Docsworth's search leaves the page out and names its owner,</strong> in all 99
+          answers across the three models. Its read tool still returns the page if the agent asks
+          for it by id: Opus and Sonnet never did, and Haiku did in two answers, repeating it in one.</li>
+        <li><strong>It has a cost.</strong> If a stale page is still right, the agent gives only who
+          to ask, not the steps.</li>
+        <li><strong>Only search's default is enforced.</strong> Read by id, and search with
+          <code>include_stale</code>, return a stale page, labelled. An agent that can also open
+          the knowledge repository's files directly bypasses Docsworth entirely.</li>
+        <li><strong>The stale pages may well be right.</strong> "Repeated" means the agent relied on
+          a page nobody had verified within its review period, not that the answer was wrong.</li>
+        <li><strong>It's a demonstration, not a field result.</strong> The example repo has 24 pages,
+          we wrote the questions, and the eleven questions cover only three stale pages.</li>
         <li><strong>These setups aren't the products below.</strong> They stand for patterns, not
-          products. We didn't run Notion, Glean, Guru or Confluence, and some of them do more
-          than label: see the table.</li>
+          products. We didn't run Notion, Glean, Guru or Confluence, and some of them do more than
+          label: see the table.</li>
         <li><strong>Docsworth's agent instructions were tuned</strong> on some of these questions
-          earlier. On the four we never tuned on, the answers that repeated the stale page were 12,
-          12, 6 and 0 out of 12, in the order above.</li>
+          earlier, on Opus. On the four we never tuned on, the Opus counts are 12, 12, 6 and 0 out
+          of 12, in the order of the first three setups and Docsworth.</li>
       </ul>
 
       <h2>How similar tools handle stale pages</h2>
@@ -247,7 +291,7 @@
       <table class="wide">
         <thead><tr><th>Tool</th><th>Owner and review date</th><th>What its AI does with an unverified page</th><th>Where the content lives</th></tr></thead>
         <tbody>
-          <tr><td><strong>Docsworth</strong></td><td>One owning team per page, through CODEOWNERS, and a review period per page</td><td>Withholds it, by default, from every agent that reads through its MCP server, and returns its owner</td><td>Your Git repository</td></tr>
+          <tr><td><strong>Docsworth</strong></td><td>One owning team per page, through CODEOWNERS, and a review period per page</td><td>Search leaves it out by default, for every agent that reads through its MCP server, and returns its owner. Read by id, or search with <code>include_stale</code>, returns it, marked not citable</td><td>Your Git repository</td></tr>
           <tr><td>Confluence with Rovo</td><td>A verified status <a href="#s1">[1]</a> and page owners <a href="#s14">[14]</a>. Atlassian's 2024 announcement says verification doesn't expire on its own, though an automation rule can un-verify inactive pages <a href="#s1">[1]</a></td><td>Rovo search boosts fresher results and lets a user filter to verified pages <a href="#s2">[2]</a>; the Rovo MCP tools document no such filter <a href="#s3">[3]</a>. A third-party app says it keeps stale pages out of answers <a href="#s13">[13]</a></td><td>Atlassian's cloud</td></tr>
           <tr><td>Notion</td><td>Verification with an optional expiry date, and an owner who is told when it expires <a href="#s4">[4]</a></td><td>Prioritises verified pages in search and Q&amp;A <a href="#s5">[5]</a>; Q&amp;A can still find outdated pages <a href="#s6">[6]</a></td><td>Notion's cloud</td></tr>
           <tr><td>Guru</td><td>A verifier and a review interval per card <a href="#s7">[7]</a></td><td>Can answer from unverified cards by default <a href="#s7">[7]</a>; an agent's owner can set it to "Only verified connected sources" <a href="#s8">[8]</a>. Its MCP server works through those agents; the docs don't say whether its search and fetch honour the setting <a href="#s15">[15]</a></td><td>Guru's cloud</td></tr>
@@ -257,9 +301,10 @@
       </table>
       </div>
       <p>Owners, verification and expiry aren't new, and Guru can keep any Knowledge Agent to
-        verified sources if that agent's owner turns it on. What Docsworth adds is where the rule lives: in your
-        own repository, applied by default to every agent that reads through its MCP server, with
-        the owner returned in place of the page.</p>
+        verified sources if that agent's owner turns it on. What Docsworth adds is where the rule
+        lives: in your own repository, applied by default to every agent's search through its MCP
+        server, with the owner returned in place of the page. Its read tool still returns a stale
+        page if asked for it by id, marked not citable.</p>
 
       <h2>Sources</h2>
       <ol class="sources">
