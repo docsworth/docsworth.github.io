@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Docsworth use cases</title>
+<meta name="description" content="Four real Claude Code sessions with Docsworth: answering during an incident, fixing a runbook after one, keeping pages verified, and adopting a team's existing docs on day one.">
+<meta property="og:title" content="Docsworth use cases">
+<meta property="og:description" content="Four real Claude Code sessions: answering during an incident, fixing a runbook after one, keeping pages verified, and adopting a team's existing docs on day one.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://docsworth.github.io/use-cases.html">
+<meta property="og:image" content="https://docsworth.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Claude Code declining to cite an overdue scaling runbook and naming the platform team as its owner.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="color-scheme" content="light dark">
+<!-- The bow tie, inline. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%237a2331' stroke='%237a2331' stroke-linejoin='round' stroke-width='1.5' d='M2.5 6.5 10.5 12l-8 5.5zM21.5 6.5 13.5 12l8 5.5z'/%3E%3Crect x='9.5' y='9.5' width='5' height='5' rx='1.2' fill='%237a2331'/%3E%3C/svg%3E">
+<style>
+  /* One file, system fonts, no scripts, no cookies, no analytics. */
+  :root {
+    --paper: #f7f3ea;
+    --ink: #1f1c17;
+    --muted: #5e584d;
+    --rule: #ddd5c4;
+    --accent: #7a2331;
+    --accent-ink: #fbf7ef;
+    --card: #fffdf8;
+    --code: #efe9dc;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #16140f;
+      --ink: #ece6d8;
+      --muted: #b0a794;
+      --rule: #3a352b;
+      --accent: #e3a1aa;
+      --accent-ink: #1c1712;
+      --card: #1f1c16;
+      --code: #2a261e;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font: 1.0625rem/1.6 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  .wrap { max-width: 42rem; margin: 0 auto; padding: 0 16px; }
+  header { padding: 2.5rem 0 0; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+  header nav a { font-size: .95rem; }
+  .mark {
+    display: inline-flex; align-items: center; gap: .55rem;
+    font: 600 1.25rem/1 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    letter-spacing: .01em;
+  }
+  .mark svg { width: 1.7rem; height: 1.7rem; color: var(--accent); }
+  main { padding: 3rem 0 2.5rem; }
+  h1 {
+    font: 600 clamp(1.9rem, 5.2vw, 2.7rem)/1.15 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    letter-spacing: -.01em;
+    margin: 0 0 2rem;
+    text-wrap: balance;
+  }
+  h1 .rest { color: var(--muted); }
+  h2 {
+    font: 600 1.35rem/1.25 "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    margin: 2.5rem 0 1rem;
+  }
+  figure { margin: 0 0 2rem; }
+  video {
+    display: block; width: 100%; height: auto; aspect-ratio: 8 / 9;
+    border-radius: 6px; border: 1px solid var(--rule); background: #1e1e2e;
+  }
+  figcaption { font-size: .875rem; color: var(--muted); margin-top: .6rem; }
+  p { margin: 0 0 1.25rem; }
+  ul { margin: 0 0 1.25rem; padding-left: 1.25rem; }
+  li { margin: 0 0 .4rem; }
+  pre {
+    background: var(--code);
+    border-radius: 4px;
+    padding: .8rem 1rem;
+    margin: 0 0 1.25rem;
+    font: .85rem/1.6 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  code { font: .9em ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  .cta { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; margin: 1.75rem 0 0; }
+  .button {
+    display: inline-block;
+    background: var(--accent); color: var(--accent-ink);
+    font-weight: 600; text-decoration: none;
+    padding: .7rem 1.2rem; border-radius: 4px;
+  }
+  .button:hover { filter: brightness(1.08); }
+  a { color: var(--accent); text-underline-offset: .18em; }
+  a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  footer {
+    border-top: 1px solid var(--rule);
+    padding: 1.25rem 0 2.5rem;
+    font-size: .875rem; color: var(--muted);
+  }
+  .scenario { margin: 0 0 3rem; }
+  .who { font-size: .95rem; color: var(--muted); margin: -.5rem 0 1rem; }
+  .why { border-left: 3px solid var(--accent); padding: .1rem 0 .1rem 1rem; margin: 0 0 1.25rem; }
+  .why strong { display: block; }
+  .toc { padding-left: 1.25rem; }
+  .small { font-size: .875rem; color: var(--muted); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="mark" href="./" style="color: inherit; text-decoration: none">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" stroke="currentColor" stroke-linejoin="round" stroke-width="1.5" d="M2.5 6.5 10.5 12l-8 5.5zM21.5 6.5 13.5 12l8 5.5z"/>
+          <rect x="9.5" y="9.5" width="5" height="5" rx="1.2" fill="currentColor"/>
+        </svg>
+        Docsworth
+      </a>
+      <nav><a href="./#try-it">Try it</a> &nbsp; <a href="https://github.com/docsworth/docsworth">GitHub</a></nav>
+    </header>
+
+    <main>
+      <h1>Four moments where it matters. <span class="rest">Each one a real Claude Code session.</span></h1>
+
+      <p>Docsworth sits between your coding agents and your team's runbooks. Agents cite
+        only pages a team owns and has verified recently, and name the owner of everything
+        else. Fixes and verifications go to the owning team as pull requests. Here is what
+        that looks like across a page's life:</p>
+      <ol class="toc">
+        <li><a href="#incident">During an incident: answer from what's verified</a></li>
+        <li><a href="#after-incident">After the incident: fix the runbook where the next agent reads it</a></li>
+        <li><a href="#reverify">Every quarter: keep a page trusted with one small PR</a></li>
+        <li><a href="#adopt">Day one: start from the docs you already have</a></li>
+      </ol>
+      <p class="small">Every recording is a real session with the Docsworth plugin on our
+        example repo, a made-up company called Acme. The answers are unedited; only idle time is
+        cut, and a caption band says what each part shows.</p>
+
+      <section class="scenario" id="incident">
+        <h2>During an incident: answer from what's verified</h2>
+        <p class="who">For the on-call engineer, in the service's own repo.</p>
+        <figure>
+          <video src="demo.mp4" poster="demo-poster.png" muted playsinline controls preload="none"
+            aria-label="Claude Code answers a rollback question from a verified runbook, then declines to cite an overdue scaling runbook and names the platform team as its owner"></video>
+          <figcaption>The rollback runbook was verified on October 10, so the agent answers from
+            it and says who owns it. The cluster-scaling runbook was due for review on October
+            30, so the agent doesn't give its steps; it names the platform team instead.</figcaption>
+        </figure>
+        <p>Ask the way you already do. Docsworth's search hands the agent the pages a team has
+          verified inside their review window, each with its owner and date. A page past its
+          review date, a draft, or a deprecated page comes back without its text: just its
+          title, its owner and why it was left out.</p>
+        <div class="why"><strong>Why it helps</strong> Nobody checks a runbook's date at 2 a.m.
+          The agent does it for you, every time, and when the page can't be trusted you learn
+          who to call instead of running last spring's steps.</div>
+      </section>
+
+      <section class="scenario" id="after-incident">
+        <h2>After the incident: fix the runbook where the next agent reads it</h2>
+        <p class="who">For whoever writes the postmortem.</p>
+        <figure>
+          <video src="media/after-incident.mp4" poster="media/after-incident-poster.jpg" muted playsinline controls preload="none"
+            aria-label="Claude Code reads a postmortem and opens a draft pull request that adds the missing migration step to the rollback runbook; then that pull request's diff"></video>
+          <figcaption>Claude read the postmortem, found the one runbook it showed to be wrong, and opened a
+            pull request with the missing step, in 34 seconds. It opened it as a draft and said
+            why: the new step sits awkwardly beside another runbook's advice never to undo a
+            migration, which the platform team should settle. The last part, recorded separately,
+            is <a href="https://github.com/docsworth/acme-knowledge/pull/2">that pull request</a>'s diff.</figcaption>
+        </figure>
+        <p>Point Claude Code at the postmortem and ask it to update the runbooks it touched.
+          The plugin's <code>update-after-incident</code> skill finds the affected pages, and
+          <code>propose_edit</code> opens one pull request per page with the exact change and,
+          as its reason, what happened during the incident.</p>
+        <div class="why"><strong>Why it helps</strong> Postmortem action items tend to wait
+          in a ticket until the next outage. Here the fix is a small diff in the owning team's
+          review queue within a minute, with the evidence attached. Nothing merges until that
+          team approves it, and Docsworth never writes to your default branch.</div>
+      </section>
+
+      <section class="scenario" id="reverify">
+        <h2>Every quarter: keep a page trusted with one small PR</h2>
+        <p class="who">For the team that owns the pages.</p>
+        <figure>
+          <video src="media/reverify.mp4" poster="media/reverify-poster.jpg" muted playsinline controls preload="none"
+            aria-label="The platform team lists its overdue pages, verifies the cluster-scaling runbook, commits the one-line change, and Claude Code then answers from that runbook, verified today"></video>
+          <figcaption>Two platform pages are overdue. Verifying the scaling runbook changes one line, its
+            verified date; here it's committed locally, where your team would open a pull request.
+            Asked the question it wouldn't answer in the first video, the agent now gives the
+            steps, says the page was verified today, and points out what the page doesn't say:
+            how many nodes to add.</figcaption>
+        </figure>
+        <p><code>docsworth stale --owner-team platform</code> lists the pages a team owns that
+          are past their review date. Someone on the team reads one, fixes what changed, and
+          runs <code>docsworth verify</code>. That moves the page's verified date to today: a
+          one-line change the team reviews like any other pull request.</p>
+        <div class="why"><strong>Why it helps</strong> Keeping docs current stops being a
+          project. Each page has a review date and an owner, so the work arrives in small,
+          named pieces, and the moment a page is verified, agents cite it again.</div>
+      </section>
+
+      <section class="scenario" id="adopt">
+        <h2>Day one: start from the docs you already have</h2>
+        <p class="who">For a team with markdown docs in a service repo or a docs site.</p>
+        <figure>
+          <video src="media/adopt.mp4" poster="media/adopt-poster.jpg" muted playsinline controls preload="none"
+            aria-label="A payments team creates a knowledge repo, copies in its existing docs, adopts them with their dates from git, lists the drafts, verifies one page, then asks Claude Code two questions"></video>
+          <figcaption><code>adopt</code> dated five pages from the history of the repo they came from, and
+            <code>drafts</code> lists them newest first. Once the team verifies the refund page,
+            the agent answers from it, with its owner and date. Asked how to rotate the webhook
+            secret, it finds only a draft, says so, and suggests checking with the payments team
+            before relying on it.</figcaption>
+        </figure>
+        <p>Copy your docs into a knowledge repo and run <code>docsworth adopt</code>. Each page
+          gets an owner from CODEOWNERS and, with <code>--dates-from</code>, the date its content
+          last changed in the repo it came from. <code>docsworth drafts</code> then lists them
+          newest first: the queue your team verifies from.</p>
+        <div class="why"><strong>Why it helps</strong> No migration and no new editor: the
+          pages stay markdown in git. Agents can find drafts from the first hour and name their
+          owners, but cite only what a team has verified, so nothing unchecked is quoted as
+          fact while you work through the queue.</div>
+      </section>
+
+      <h2>Try it on your own runbooks</h2>
+      <p>The CLI is on npm and the plugin installs from our Claude Code marketplace. The
+        <a href="./#try-it">quickstart</a> is a few commands. If you'd like help rolling it out
+        to a team, <a href="https://github.com/docsworth/docsworth/issues/new">open an issue</a>.</p>
+    </main>
+
+    <footer>
+      The core is open source under Apache-2.0. Every recording here is a real session on our
+      example repo, with the idle time cut and the answers unedited.
+    </footer>
+  </div>
+</body>
+</html>
