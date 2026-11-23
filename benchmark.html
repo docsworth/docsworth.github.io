@@ -241,15 +241,20 @@
       </div>
       <p>By the benchmark's older rule, which checks only what an answer cites and whether it names
         the owner, the setups are closer. Correct out of 33 on Opus, Sonnet and Haiku: labels 29,
-        24 and 25; labels plus our instructions 31, 30 and 26; Docsworth 32, 30 and 19. On Haiku,
+        24 and 25; labels plus our instructions 31, 30 and 27; Docsworth 32, 30 and 21. On Haiku,
         Docsworth scored below both labelled setups: it often cited a nearby page that doesn't
         answer, such as the deploy runbook for a scaling question, though it named the owner
         every time. Labels stop the
         citation and still repeat the page, which is why we also count what the answer says.</p>
       <p><strong>Ordinary questions,</strong> correct out of 45: Opus 37 with plain search, 37 with
-        labels and 42 with Docsworth; Sonnet 38, 36 and 41; Haiku 30, 35 and 36. Docsworth also
+        labels and 42 with Docsworth; Sonnet 38, 36 and 41; Haiku 30, 35 and 37. Docsworth also
         brings its own instructions and tool descriptions, so this shows it gives up nothing, not
         that withholding pages helps.</p>
+      <p class="small"><strong>Updated November 23:</strong> Haiku sometimes wrote its citations into
+        the answer text by mistake, so the benchmark recorded none. It now scores such an answer by
+        the citations written there. That turned five Haiku answers correct and moved four counts:
+        Docsworth 19 to 21 and 36 to 37, labels plus our instructions 26 to 27, and round 3's 17 to
+        18. Nothing else changed.</p>
       <p>"Repeated" means the answer contains a phrase from the stale page, or a rewording of one,
         that no current page contains, such as <code>prod_pool_max</code> or "shadow two full
         primary shifts". The hand check removed matches on generic advice like "ask your manager":
@@ -313,7 +318,7 @@
           <tr><td>Opened the stale page by id</td><td class="n">2 (0)</td><td class="n">0 (0)</td><td class="n">9 (2)</td></tr>
           <tr><td><strong>Repeated it</strong></td><td class="n"><strong>0</strong> (0)</td><td class="n"><strong>0</strong> (0)</td><td class="n"><strong>0</strong> (1)</td></tr>
           <tr><td>Named its owner</td><td class="n">33 (33)</td><td class="n">33 (33)</td><td class="n">33 (33)</td></tr>
-          <tr><td>Correct by the older rule</td><td class="n">32 (32)</td><td class="n">27 (30)</td><td class="n">17 (19)</td></tr>
+          <tr><td>Correct by the older rule</td><td class="n">32 (32)</td><td class="n">27 (30)</td><td class="n">18 (21)</td></tr>
         </tbody>
       </table>
       </div>
@@ -321,8 +326,7 @@
         benchmark's read tool takes only an id, so no run could pass <code>include_stale</code>; on
         the real server, an agent that went for the page could ask again with it and get the text,
         labelled. The dips in the older rule's count are the misses round 2 found: an answer that
-        cites a nearby page that doesn't answer, or, once on Haiku, one whose citation was written
-        into the answer text by mistake, so the benchmark recorded none. None cited the stale page. At 33 runs a model they
+        cites a nearby page that doesn't answer. None cited the stale page. At 33 runs a model they
         can't be told apart from noise, and the prompt changed too; we didn't measure further, and
         didn't rerun the 15 ordinary questions. The rerun cost $2.21.</p>
 
