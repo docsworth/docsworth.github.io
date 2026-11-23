@@ -180,10 +180,11 @@
       </ul>
       <p>With labels alone, the agent flagged the page as stale and repeated its steps or facts
         anyway. A plain filter that removes stale pages stops that, but then the agent rarely
-        knows who to ask: it named the owner 7 times in 33. Docsworth's search leaves the page out
+        knows who to ask: it named the owner 7 times in 33. Docsworth leaves the page's text out
         by default and returns its owner instead. The pattern held on Claude Sonnet 5.5 and Haiku
         5.5, though Haiku through Docsworth often cited a nearby page that doesn't answer. Across their 66
-        answers through Docsworth, one Haiku answer repeated a stale page, after reading it by id. On 15 ordinary questions Docsworth
+        answers through Docsworth, one Haiku answer repeated a stale page, after reading it by id. Since
+        v0.4.0, reading by id leaves the text out too, and rerun on it, no model repeated the page. On 15 ordinary questions Docsworth
         gave up nothing on any of the three models.</p>
       <p class="small">The setups are simulated on our own example repo and questions, so read it
         as a demonstration, not a field result or a test of any other product. Ambiguous repeats
@@ -195,6 +196,9 @@
         hands an agent a stale page. Its search leaves stale pages out by default (an agent can ask
         for them with <code>include_stale</code>), and its read tool returns one if the agent asks for
         it by id.</p>
+      <p class="small"><strong>Updated November 23:</strong> since v0.4.0, read leaves a stale page's
+        text out by default too, and <code>include_stale</code> opts in. Rerun on v0.4.0, Docsworth
+        repeated the stale page in none of 99 answers. <a href="benchmark.html#round-3">Round 3</a>.</p>
 
       <h2 id="try-it">Try it</h2>
       <p>You need Node 22.12 or later, a GitHub repository for your knowledge, and Claude Code.</p>

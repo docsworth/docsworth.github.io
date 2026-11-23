@@ -148,12 +148,19 @@
       <h1>What an agent does with a stale runbook. <span class="rest">Five setups, three models, one question.</span></h1>
 
       <p>When the only page that answers a question is past its review date, or is still a draft,
-        does the agent repeat it? We measured that on November 17 and 18, 2026.</p>
+        does the agent repeat it? We measured that on November 17 and 18, 2026, on Docsworth
+        v0.3.2, and again for Docsworth alone on November 23, on v0.4.0.</p>
 
       <p class="small"><strong>Corrected November 18.</strong> The first version of this page said
         Docsworth never hands an agent a stale page. That's true of its search by default, not of
         its read tool, which returns a stale page if the agent asks for it by id. In the results below, Haiku
         read a stale page that way in two answers and repeated it in one.</p>
+
+      <p class="small"><strong>Updated November 23.</strong> Since v0.4.0, released November 22,
+        Docsworth's read tool leaves a stale page's text out too, unless the agent passes
+        <code>include_stale</code>. We reran Docsworth on it: no model repeated the stale page.
+        Haiku still opened it by id in 9 of 33 runs, and got its owner and the reason, not its
+        steps. See <a href="#round-3">round 3</a>.</p>
 
       <p>How many of the 33 runs per setup repeated the stale runbook's steps or facts, on Claude
         Opus 5.5:</p>
@@ -185,12 +192,14 @@
         <li><strong>Filtered: stale pages removed.</strong> Plain search exactly, over only the pages
           Docsworth would let an agent cite. Overdue, draft, deprecated and mirrored wiki pages are
           simply absent.</li>
-        <li><strong>Docsworth.</strong> Docsworth v0.3.2's search and read, with the instructions and
-          tool descriptions its MCP server sends. Search lists a page past its review date, or a
-          draft, as excluded, with its owner and without its text. (The real server's search also
-          takes <code>include_stale</code>, which returns such pages inline, labelled; this
-          benchmark's search tool took only a query.) Read returns the text if asked for that page
-          by id, marked not citable.</li>
+        <li><strong>Docsworth.</strong> Docsworth v0.3.2's search and read (v0.4.0 in round 3), with
+          the instructions and tool descriptions its MCP server sends. Search lists a page past its
+          review date, or a draft, as excluded, with its owner and without its text. (The real
+          server's search also takes <code>include_stale</code>, which returns such pages inline,
+          labelled; this benchmark's search tool took only a query.) On v0.3.2, read returned the
+          text if asked for that page by id, marked not citable. Since v0.4.0 it returns the owner
+          and the reason instead, unless the agent passes <code>include_stale</code>, which this
+          benchmark's read tool, taking only an id, couldn't.</li>
       </ul>
 
       <h2>The questions</h2>
@@ -265,13 +274,16 @@
           filter ran a day after the other setups, and one of its runs hit the turn limit without
           answering.</li>
         <li><strong>Docsworth's search leaves the page out and names its owner,</strong> in all 99
-          answers across the three models. Its read tool still returns the page if the agent asks
-          for it by id: Opus and Sonnet never did, and Haiku did in two answers, repeating it in one.</li>
+          answers across the three models. On v0.3.2 its read tool still returned the page if the
+          agent asked for it by id: Opus and Sonnet never did, and Haiku did in two answers,
+          repeating it in one. Since v0.4.0 it doesn't: see <a href="#round-3">round 3</a>.</li>
         <li><strong>It has a cost.</strong> If a stale page is still right, the agent gives only who
           to ask, not the steps.</li>
-        <li><strong>Only search's default is enforced.</strong> Read by id, and search with
-          <code>include_stale</code>, return a stale page, labelled. An agent that can also open
-          the knowledge repository's files directly bypasses Docsworth entirely.</li>
+        <li><strong>What the defaults don't cover.</strong> Since v0.4.0, search and read both
+          leave a stale page's text out unless the agent passes <code>include_stale</code>, which
+          returns it, labelled. Docsworth's web app shows any page's text to whoever holds its
+          local token, mirrored wiki pages are read with their text as context, and an agent that
+          can also open the knowledge repository's files directly bypasses Docsworth entirely.</li>
         <li><strong>The stale pages may well be right.</strong> "Repeated" means the agent relied on
           a page nobody had verified within its review period, not that the answer was wrong.</li>
         <li><strong>It's a demonstration, not a field result.</strong> The example repo has 24 pages,
@@ -284,6 +296,36 @@
           of 12, in the order of the first three setups and Docsworth.</li>
       </ul>
 
+      <h2 id="round-3">Round 3: read leaves the text out</h2>
+      <p>Docsworth v0.4.0 changed its read tool: a page that isn't citable comes back with its owner
+        and the reason, not its text, unless the agent passes <code>include_stale</code>. On
+        November 23 we reran Docsworth alone on it, with the same eleven questions, three runs each
+        on each model. Its instructions and read's description are v0.4.0's: among other things,
+        the instructions now say what to do when read returns a page without its text. We didn't
+        rerun the other setups: plain search, labels and the filter don't use Docsworth's read, and
+        labels plus our instructions, which borrows the instructions, wasn't measured again. Out of
+        33, with rounds 1 and 2 in brackets:</p>
+      <div class="scroll">
+      <table>
+        <caption class="small" style="text-align: left; caption-side: bottom; padding-top: .5rem">The three Haiku answers the phrase check flagged match only "ask your manager", and were read by hand: each says it left the page out.</caption>
+        <thead><tr><th>Docsworth</th><th class="n">Opus 5.5</th><th class="n">Sonnet 5.5</th><th class="n">Haiku 5.5</th></tr></thead>
+        <tbody>
+          <tr><td>Opened the stale page by id</td><td class="n">2 (0)</td><td class="n">0 (0)</td><td class="n">9 (2)</td></tr>
+          <tr><td><strong>Repeated it</strong></td><td class="n"><strong>0</strong> (0)</td><td class="n"><strong>0</strong> (0)</td><td class="n"><strong>0</strong> (1)</td></tr>
+          <tr><td>Named its owner</td><td class="n">33 (33)</td><td class="n">33 (33)</td><td class="n">33 (33)</td></tr>
+          <tr><td>Correct by the older rule</td><td class="n">32 (32)</td><td class="n">27 (30)</td><td class="n">17 (19)</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p>Agents still open the stale page by id, and now get who to ask instead of its steps. This
+        benchmark's read tool takes only an id, so no run could pass <code>include_stale</code>; on
+        the real server, an agent that went for the page could ask again with it and get the text,
+        labelled. The dips in the older rule's count are the misses round 2 found: an answer that
+        cites a nearby page that doesn't answer, or, once on Haiku, one whose citation was written
+        into the answer text by mistake, so the benchmark recorded none. None cited the stale page. At 33 runs a model they
+        can't be told apart from noise, and the prompt changed too; we didn't measure further, and
+        didn't rerun the 15 ordinary questions. The rerun cost $2.21.</p>
+
       <h2>How similar tools handle stale pages</h2>
       <p>From each vendor's own documentation, read on November 17, 2026. We didn't test them in a
         live account, and they change often.</p>
@@ -291,7 +333,7 @@
       <table class="wide">
         <thead><tr><th>Tool</th><th>Owner and review date</th><th>What its AI does with an unverified page</th><th>Where the content lives</th></tr></thead>
         <tbody>
-          <tr><td><strong>Docsworth</strong></td><td>One owning team per page, through CODEOWNERS, and a review period per page</td><td>Search leaves it out by default, for every agent that reads through its MCP server, and returns its owner. Read by id, or search with <code>include_stale</code>, returns it, marked not citable</td><td>Your Git repository</td></tr>
+          <tr><td><strong>Docsworth</strong></td><td>One owning team per page, through CODEOWNERS, and a review period per page</td><td>Search and read leave its text out by default, for every agent that reads through its MCP server, and return its owner. Either, with <code>include_stale</code>, returns it, marked not citable</td><td>Your Git repository</td></tr>
           <tr><td>Confluence with Rovo</td><td>A verified status <a href="#s1">[1]</a> and page owners <a href="#s14">[14]</a>. Atlassian's 2024 announcement says verification doesn't expire on its own, though an automation rule can un-verify inactive pages <a href="#s1">[1]</a></td><td>Rovo search boosts fresher results and lets a user filter to verified pages <a href="#s2">[2]</a>; the Rovo MCP tools document no such filter <a href="#s3">[3]</a>. A third-party app says it keeps stale pages out of answers <a href="#s13">[13]</a></td><td>Atlassian's cloud</td></tr>
           <tr><td>Notion</td><td>Verification with an optional expiry date, and an owner who is told when it expires <a href="#s4">[4]</a></td><td>Prioritises verified pages in search and Q&amp;A <a href="#s5">[5]</a>; Q&amp;A can still find outdated pages <a href="#s6">[6]</a></td><td>Notion's cloud</td></tr>
           <tr><td>Guru</td><td>A verifier and a review interval per card <a href="#s7">[7]</a></td><td>Can answer from unverified cards by default <a href="#s7">[7]</a>; an agent's owner can set it to "Only verified connected sources" <a href="#s8">[8]</a>. Its MCP server works through those agents; the docs don't say whether its search and fetch honour the setting <a href="#s15">[15]</a></td><td>Guru's cloud</td></tr>
@@ -302,9 +344,9 @@
       </div>
       <p>Owners, verification and expiry aren't new, and Guru can keep any Knowledge Agent to
         verified sources if that agent's owner turns it on. What Docsworth adds is where the rule
-        lives: in your own repository, applied by default to every agent's search through its MCP
-        server, with the owner returned in place of the page. Its read tool still returns a stale
-        page if asked for it by id, marked not citable.</p>
+        lives: in your own repository, applied by default to every agent's search and read through
+        its MCP server, with the owner returned in place of the page. An agent can still ask for
+        the text with <code>include_stale</code>, and gets it marked not citable.</p>
 
       <h2>Sources</h2>
       <ol class="sources">
